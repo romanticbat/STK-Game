@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secret of the Kingdom</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+<style>
+  :root{
+    --gold: #f6d66a;
+    --gold-soft: rgba(246,214,106,.55);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+
+  body{
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: url("images/tela inicial FINAL.png") center no-repeat fixed;
+    background-size: contain;
+    filter: brightness(1.08) contrast(1.06);
+    overflow:hidden;
+    position:relative;
+    transition: filter 0.3s ease;
+  }
+
+  #fx{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .container{
+    position:relative;
+    z-index:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px; /* aproxima do título */
+    padding:32px;
+    text-align:center;
+  }
+
+  .titulo{
+    width:min(78vw, 820px);
+    transform:rotate(-15deg);
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,.55));
+    user-select:none;
+    -webkit-user-drag:none;
+    animation: breathe 3s ease-in-out infinite;
+    margin-bottom:-20px;
+  }
+  @keyframes breathe {
+    0%, 100% { filter: drop-shadow(0 8px 14px rgba(0,0,0,.55)) drop-shadow(0 0 18px rgba(246,214,106,0.3)); }
+    50% { filter: drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(246,214,106,0.6)); }
+  }
+
+  .tagline{
+    margin-top:-250px;
+    font-size:clamp(16px, 2.2vw, 24px);
+    color:#f3e6c6;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
+    filter: drop-shadow(0 0 18px rgba(246,214,106,.2));
+    transform: rotate(-15deg); /* mesma inclinação da logo */
+    display:inline-block; /* garante que a rotação funcione sem quebrar layout */
+    margin-left: 200px;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-top:20px;
+  transform: rotate(-15deg) translateX(120px);
+}
+
+.btn-img {
+  display: block;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  user-select: none;
+  width: 240px;
+  transform: none;
+}
+
+.btn-img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
+
+  @media (max-width: 560px){
+    .actions{gap:18px}
+    .btn-img{width:180px;}
+  }
+
+  @media (max-width: 400px){
+    .titulo { width: 90vw; }
+    .btn-img{width:140px;}
+  }
+</style>
+
+</head>
+<body>
+
+  <canvas id="fx"></canvas>
+
+  <main class="container" role="main">
+    <img class="titulo" src="images/titulo sotk.png" alt="Secret of the Kingdom">
+    <p class="tagline">Um reino perdido guarda segredos além do tempo…</p>
+
+    <nav class="actions" aria-label="Ações principais">
+      <a href="mapa.html"><img class="btn-img" src="images/botao com titulo.png" alt="Jogar"></a>
+      <a href="galeria.html"><img class="btn-img" src="images/botao galeria.png" alt="Galeria"></a>
+    </nav>
+  </main>
+
+  <script>
+    (function(){
+      const c = document.getElementById('fx');
+      const ctx = c.getContext('2d');
+      let W, H, DPR;
+
+      const PARTICLES = [];
+      const COUNT = 90;
+      const GOLD = 'rgba(246,214,106,';
+      const GLOW = 'rgba(246,214,106,0.35)';
+
+      function resize(){
+        DPR = Math.min(window.devicePixelRatio || 1, 2);
+        W = c.width  = Math.floor(innerWidth * DPR);
+        H = c.height = Math.floor(innerHeight * DPR);
+        c.style.width  = innerWidth + 'px';
+        c.style.height = innerHeight + 'px';
+      }
+
+      class P{
+        constructor(){ this.reset(true); }
+        reset(first=false){
+          const cx = W/2, cy = H/2;
+          const rx = Math.max(W, H)*0.6;
+          this.x = first ? (cx + (Math.random()-0.5)*rx) : (Math.random()*W);
+          this.y = first ? (cy + (Math.random()-0.5)*rx*0.6) : (-20*DPR);
+          this.size = (Math.random()*1.8 + 0.8) * DPR;
+          this.speedY = (Math.random()*0.25 + 0.08) * DPR;
+          this.speedX = (Math.random()*0.18 - 0.09) * DPR;
+          this.alpha = Math.random()*0.55 + 0.25;
+          this.twist = Math.random()*Math.PI*2;
+          this.twistSpeed = Math.random()*0.02 + 0.005;
+        }
+        step(){
+          this.x += this.speedX + Math.cos(this.twist)*0.05*DPR;
+          this.y -= this.speedY;
+          this.twist += this.twistSpeed;
+          if(this.y < -30*DPR || this.x < -30*DPR || this.x > W+30*DPR){
+            this.reset();
+            this.y = H + 10*DPR;
+          }
+        }
+        draw(){
+          ctx.beginPath();
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size*6);
+          g.addColorStop(0, GLOW);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g;
+          ctx.arc(this.x, this.y, this.size*6, 0, Math.PI*2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.fillStyle = GOLD + this.alpha + ')';
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+
+      function init(){
+        PARTICLES.length = 0;
+        for(let i=0;i<COUNT;i++) PARTICLES.push(new P());
+      }
+
+      function loop(){
+        ctx.clearRect(0,0,W,H);
+        for(const p of PARTICLES){ p.step(); p.draw(); }
+        requestAnimationFrame(loop);
+      }
+
+      window.addEventListener('resize', ()=>{ resize(); init(); });
+      resize(); init(); loop();
+
+      // ==== Mantida a versão otimizada dos efeitos ====
+      document.querySelectorAll('.btn-img').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          const rect = btn.getBoundingClientRect();
+          const MAX_PARTICLES = 120; 
+          if (PARTICLES.length > MAX_PARTICLES) {
+            PARTICLES.splice(0, PARTICLES.length - MAX_PARTICLES);
+          }
+          for (let i = 0; i < 4; i++) {
+            const p = new P();
+            p.x = rect.left + Math.random() * rect.width;
+            p.y = rect.top + Math.random() * rect.height;
+            p.speedY = Math.random() * 0.5 + 0.05;
+            p.speedX = (Math.random() - 0.5) * 0.2;
+            PARTICLES.push(p);
+          }
+          document.body.style.filter = 'brightness(1.18) contrast(1.08)';
+        });
+        btn.addEventListener('mouseleave', () => {
+          document.body.style.filter = 'brightness(1.08) contrast(1.06)';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
