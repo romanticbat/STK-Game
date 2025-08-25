@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual Novel Base</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100vh;
+      background-image: url('bg1.jpg'); /* coloque a imagem do cenário aqui */
+      background-size: cover;
+      background-position: center;
+    }
+
+    #dialogue-box {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      font-size: 16px;
+    }
+
+    #character-name {
+      font-weight: bold;
+      color: #7db9e8;
+      margin-bottom: 10px;
+    }
+
+    #text {
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background-color: #222;
+      border: 1px solid #555;
+      padding: 10px;
+      margin: 5px 0;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .choice:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="dialogue-box">
+    <div id="character-name"></div>
+    <div id="text"></div>
+    <div id="choices"></div>
+  </div>
+
+  <script>
+    const story = [
+      {
+        name: "Yuichi",
+        text: "O céu parece ainda mais distante hoje...",
+        choices: [
+          { text: "Olhar para o chão", next: 1 },
+          { text: "Continuar caminhando", next: 2 }
+        ]
+      },
+      {
+        name: "Yuichi",
+        text: "Há uma flor murcha entre as rachaduras da calçada.",
+        choices: [
+          { text: "Pegar a flor", next: 3 },
+          { text: "Ignorar e seguir", next: 2 }
+        ]
+      },
+      {
+        name: "Lily (voz)",
+        text: "Você me ouve... mesmo no silêncio?",
+        choices: [
+          { text: "Sim...", next: 4 },
+          { text: "Quem é você?", next: 5 }
+        ]
+      },
+      {
+        name: "Yuichi",
+        text: "A flor parece ter mais vida do que eu.",
+        choices: [
+          { text: "Guardar no bolso", next: 6 },
+          { text: "Jogar fora", next: 7 }
+        ]
+      },
+      {
+        name: "Lily",
+        text: "Então ainda há algo em você que escuta.",
+        choices: []
+      },
+      {
+        name: "Lily",
+        text: "Logo você saberá quem eu sou.",
+        choices: []
+      },
+      {
+        name: "Yuichi",
+        text: "Talvez isso sirva de lembrança de hoje.",
+        choices: []
+      },
+      {
+        name: "Yuichi",
+        text: "Não era real... ou era?",
+        choices: []
+      }
+    ];
+
+    let currentScene = 0;
+
+    function showScene(index) {
+      const scene = story[index];
+      currentScene = index;
+
+      document.getElementById("character-name").innerText = scene.name || "";
+      document.getElementById("text").innerText = scene.text;
+      
+      const choicesDiv = document.getElementById("choices");
+      choicesDiv.innerHTML = "";
+
+      if (scene.choices.length === 0) {
+        const contBtn = document.createElement("div");
+        contBtn.classList.add("choice");
+        contBtn.innerText = "Fim";
+        contBtn.onclick = () => alert("Obrigado por jogar.");
+        choicesDiv.appendChild(contBtn);
+      } else {
+        scene.choices.forEach(choice => {
+          const btn = document.createElement("div");
+          btn.classList.add("choice");
+          btn.innerText = choice.text;
+          btn.onclick = () => showScene(choice.next);
+          choicesDiv.appendChild(btn);
+        });
+      }
+    }
+
+    showScene(currentScene);
+  </script>
+
+</body>
+</html>

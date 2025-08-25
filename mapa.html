@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Mapa do Jogo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: #000;
+      color: white;
+    }
+
+    #mapa {
+      background-image: url('mapa.png'); /* Substitua com sua imagem */
+      background-size: cover;
+      background-position: center;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .local {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.6);
+      border: 1px solid #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      border-radius: 8px;
+    }
+
+    .local:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Posição de cada local no mapa */
+    #escola { top: 30%; left: 20%; }
+    #parque { top: 50%; left: 60%; }
+    #quarto { top: 70%; left: 30%; }
+  </style>
+</head>
+<body>
+
+  <div id="mapa">
+    <div id="escola" class="local" onclick="irPara('escola')">Escola</div>
+    <div id="parque" class="local" onclick="irPara('parque')">Parque</div>
+    <div id="quarto" class="local" onclick="irPara('quarto')">Quarto</div>
+  </div>
+
+  <script>
+    function irPara(local) {
+      window.location.href = `novel.html?local=${local}`;
+    }
+  </script>
+
+</body>
+</html>
