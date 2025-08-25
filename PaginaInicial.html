@@ -94,6 +94,28 @@
   filter: brightness(1.2);
 }
 
+/* Botão de mute/unmute */
+#mute-btn {
+  position: absolute;
+  top: 50px;
+  right: 350px; /* ajusta para ficar perto da tiara branca */
+  font-size: 32px;
+  background: rgba(0,0,0,0.4);
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+#mute-btn:hover {
+  background: rgba(246,214,106,0.7);
+  transform: scale(1.1);
+}
+
   @media (max-width: 560px){
     .actions{gap:18px}
     .btn-img{width:180px;}
@@ -119,6 +141,14 @@
       <a href="galeria.html"><img class="btn-img" src="images/botao galeria.png" alt="Galeria"></a>
     </nav>
   </main>
+
+  <!-- Música de fundo -->
+  <audio id="bg-music" autoplay loop muted>
+    <source src="images/song.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Botão de mute/unmute -->
+  <button id="mute-btn">🔇</button>
 
   <script>
     (function(){
@@ -192,7 +222,7 @@
       window.addEventListener('resize', ()=>{ resize(); init(); });
       resize(); init(); loop();
 
-      // ==== Mantida a versão otimizada dos efeitos ====
+      // ==== Efeitos de partículas nos botões ====
       document.querySelectorAll('.btn-img').forEach(btn => {
         btn.addEventListener('mouseenter', () => {
           const rect = btn.getBoundingClientRect();
@@ -213,6 +243,21 @@
         btn.addEventListener('mouseleave', () => {
           document.body.style.filter = 'brightness(1.08) contrast(1.06)';
         });
+      });
+
+      // ==== Controle de música ====
+      const music = document.getElementById("bg-music");
+      const muteBtn = document.getElementById("mute-btn");
+
+      muteBtn.addEventListener("click", () => {
+        if (music.muted) {
+          music.muted = false;
+          music.play().catch(()=>{});
+          muteBtn.textContent = "🎵";
+        } else {
+          music.muted = true;
+          muteBtn.textContent = "🔇";
+        }
       });
     })();
   </script>
